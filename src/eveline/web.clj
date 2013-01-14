@@ -2,11 +2,17 @@
   (:require [ring.adapter.jetty :as adapter]
             (compojure
              [core :as ccore]
-             [handler :as handler])))
+             [route :as croute]
+             [handler :as handler])
+            (eveline [views :as views]
+                     [data :as data])
+            [clj-time.core :as time]))
 
 (ccore/defroutes routes*
+  (croute/resources "/")
   (ccore/GET "/" []
-       "Welcome! I'm Eveline, a fine Clojure-powered blog engine :)"))
+             (views/layout "Lambda Land" (data/posts)))
+  (croute/not-found "There is nothing like that here, sorry."))
 
 (def routes
   (handler/site routes*))

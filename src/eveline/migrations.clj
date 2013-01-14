@@ -3,20 +3,6 @@
   (:import java.util.Date
            java.sql.Timestamp))
 
-;; ## Utils ##
-(defn fetch-results [db-spec query]
-  (jdbc/with-connection db-spec
-    (jdbc/with-query-results res query
-      (doall res))))
-
-(defn insert-record [db-spec table record]
-  (jdbc/with-connection db-spec
-    (jdbc/insert-record table record)))
-
-(defmacro run-transaction [db-spec & forms]
-  `(jdbc/with-connection ~db-spec
-     (jdbc/transaction ~@forms)))
-
 (defmacro ensure-table [update-fn create-table-fn]
   `(try ~update-fn
         (catch org.postgresql.util.PSQLException e#
@@ -29,8 +15,9 @@
   (jdbc/with-connection db-spec
     (jdbc/create-table :posts
                        [:id "serial primary key"]
-                       [:title "varchar(255)"]
+                       [:title "varchar(256)"]
                        [:content "text"]
+                       [:type "varchar(128)"]
                        [:status "boolean"]
                        [:created "timestamp default now()"]
                        [:modified "timestamp"]
