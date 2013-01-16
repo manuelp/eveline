@@ -17,6 +17,6 @@
   `(jdbc/with-connection ~db-spec
      (jdbc/transaction ~@forms)))
 
-(defn posts []
-  (fetch-results "postgres://eveline:evelinke@localhost/eveline"
-                 ["SELECT * FROM posts"]))
+(defn posts [db-spec]
+  (fetch-results db-spec
+                 ["SELECT * FROM posts WHERE published IS NOT NULL ORDER BY published desc"]))

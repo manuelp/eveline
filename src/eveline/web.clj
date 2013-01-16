@@ -8,10 +8,12 @@
                      [data :as data])
             [clj-time.core :as time]))
 
+(def db-spec "postgres://eveline:eveline@localhost/eveline")
+
 (ccore/defroutes routes*
   (croute/resources "/")
   (ccore/GET "/" []
-             (views/layout "Lambda Land" (data/posts)))
+             (views/layout "Lambda Land" (data/posts db-spec)))
   (croute/not-found "There is nothing like that here, sorry."))
 
 (def routes
