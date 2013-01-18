@@ -21,6 +21,13 @@
   (fetch-results db-spec
                  ["SELECT * FROM posts WHERE published IS NOT NULL ORDER BY published desc"]))
 
+(defn post-months [db-spec]
+    (fetch-results db-spec
+                   [(str "SELECT cast(extract(year from published) as int) AS year,"
+                         " cast(extract(month from published) as int) as month FROM posts"
+                         " WHERE published IS NOT NULL "
+                         " group by year,month order by year,month")]))
+
 (defn month-posts [db-spec year month]
   (fetch-results db-spec
                  [(str "SELECT * FROM posts WHERE extract(year from published)=?"

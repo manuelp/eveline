@@ -1,6 +1,5 @@
 (ns eveline.views
-  (:require [eveline.core :as core]
-            [net.cgrand.enlive-html :as h]
+  (:require [net.cgrand.enlive-html :as h]
             (clj-time [core :as time]
                       [format :as tformat])
             [markdown.core :as md])
@@ -25,17 +24,19 @@
                                               :rfc822)))
   [:section] (h/content (h/html-snippet (format-content post))))
 
-(h/defsnippet archive-link "archives.html" [:a] [month]
-  [:a] (h/do->
-        (h/set-attr :href (str "/archive/" (first month) "/" (second month)))
-        (h/content (str (first month) "-" (second month)))))
+(h/defsnippet archive-link "archives.html" [:a] [post-month]
+  [:a] (let [month (:month post-month)
+             year (:year post-month)]
+         (h/do->
+          (h/set-attr :href (str "/archive/" year "/" month))
+          (h/content (str year "-" month)))))
 
-(h/defsnippet archive-items "archives.html" [:nav#archives] [archive]
-  [:li]  (h/clone-for [month (map first archive)]
-                      (h/content (archive-link month))))
+(h/defsnippet archive-items "archives.html" [:nav#archives] [post-months]
+  [:li]  (h/clone-for [post-month post-months]
+                      (h/content (archive-link post-month))))
 
-(h/deftemplate layout "layout.html" [title posts]
+(h/deftemplate layout "layout.html" [title posts post-months]
   [:head :title] (h/content title)
   [:section#posts] (h/content (for [p posts]
                                 (post p)))
-  [:section#sidebar] (h/content (archive-items (core/build-archive posts))))
+  [:section#sidebar] (h/content (archive-items post-months)))
