@@ -16,7 +16,8 @@
              (views/layout "Lambda Land" (data/posts db-spec)))
   (ccore/GET "/archive/:year/:month" [year month]
              (views/layout (str "Lambda Land: " year "-" month " archive")
-                           (data/posts db-spec)))
+                           (apply data/month-posts
+                                  (cons db-spec (map read-string [year month])))))
   (croute/not-found "There is nothing like that here, sorry."))
 
 (def routes

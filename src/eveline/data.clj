@@ -20,3 +20,8 @@
 (defn posts [db-spec]
   (fetch-results db-spec
                  ["SELECT * FROM posts WHERE published IS NOT NULL ORDER BY published desc"]))
+
+(defn month-posts [db-spec year month]
+  (fetch-results db-spec
+                 [(str "SELECT * FROM posts WHERE extract(year from published)=?"
+                       " AND extract(month from published)=?") year month]))
