@@ -27,7 +27,7 @@
 
 (h/defsnippet archive-link "archives.html" [:a] [month]
   [:a] (h/do->
-        (h/set-attr :href (str (first month) "/" (second month)))
+        (h/set-attr :href (str "/archive/" (first month) "/" (second month)))
         (h/content (str (first month) "-" (second month)))))
 
 (h/defsnippet archive-items "archives.html" [:nav#archives] [archive]
@@ -35,6 +35,7 @@
                       (h/content (archive-link month))))
 
 (h/deftemplate layout "layout.html" [title posts]
+  [:head :title] (h/content title)
   [:section#posts] (h/content (for [p posts]
                                 (post p)))
   [:section#sidebar] (h/content (archive-items (core/build-archive posts))))

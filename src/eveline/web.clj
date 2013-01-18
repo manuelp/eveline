@@ -14,6 +14,9 @@
   (croute/resources "/")
   (ccore/GET "/" []
              (views/layout "Lambda Land" (data/posts db-spec)))
+  (ccore/GET "/archive/:year/:month" [year month]
+             (views/layout (str "Lambda Land: " year "-" month " archive")
+                           (data/posts db-spec)))
   (croute/not-found "There is nothing like that here, sorry."))
 
 (def routes
