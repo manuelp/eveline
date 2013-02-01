@@ -5,7 +5,8 @@
              [route :as croute]
              [handler :as handler])
             (eveline [views :as views]
-                     [data :as data])
+                     [data :as data]
+                     [migrations :as ddl])
             [clj-time.core :as time]))
 
 (def db-spec "postgres://eveline:eveline@localhost/eveline")
@@ -28,5 +29,6 @@
 
 (defn start
   ([] (start 8080))
-  ([port] (adapter/run-jetty #'routes {:port port
-                                       :join? false})))
+  ([port] (do (ddl/migrate db-spec ddl/migrations)
+              (adapter/run-jetty #'routes {:port port
+                                           :join? false}))))
