@@ -39,4 +39,7 @@
   [:head :title] (h/content title)
   [:section#posts] (h/content (for [p posts]
                                 (post p)))
-  [:section#sidebar] (h/content (archive-items post-months)))
+  [:section#sidebar] (h/content (archive-items post-months))
+  [:footer :#current-year] (let [year (time/year (time/now))] 
+                             (if (> year 2013)
+                               (h/append (str year)))))
