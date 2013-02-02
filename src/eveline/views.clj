@@ -46,3 +46,25 @@
   [:footer :#current-year] (let [year (time/year (time/now))] 
                              (if (> year 2013)
                                (h/append (str year)))))
+
+(h/defsnippet login-form "login-form.html" [:form] [])
+
+(h/deftemplate login-page "admin.html" [title tag-line]
+    [:head :title] (h/content title)
+    [:#title] (h/content title)
+    [:#tagline] (h/content tag-line)
+    [:#main] (h/content (login-form))
+    [:footer :#current-year] (let [year (time/year (time/now))] 
+                               (if (> year 2013)
+                                 (h/append (str year)))))
+
+(h/defsnippet publish-form "publish-form.html" [:form] [])
+
+(h/deftemplate publish "admin.html" [title tag-line]
+    [:head :title] (h/content title)
+    [:#title] (h/content title)
+    [:#tagline] (h/content tag-line)
+    [:#main] (h/content (publish-form))
+    [:footer :#current-year] (let [year (time/year (time/now))] 
+                               (if (> year 2013)
+                                 (h/append (str year)))))

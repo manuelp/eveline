@@ -1,6 +1,8 @@
 (ns eveline.data
   (:require [clojure.java.jdbc :as jdbc]
-            [eveline.migrations :as m])
+            [eveline.migrations :as m]
+            (clj-time [core :as dt]
+                      [coerce :as coerce]))
   (:import java.util.Date
            java.sql.Timestamp))
 
@@ -11,6 +13,12 @@
 (defn post [db-spec id]
   (first (m/fetch-results db-spec
                           ["SELECT * FROM posts WHERE id=?" id])))
+
+(defn publish-post [db-spec title format content]
+  (m/insert-record db-spec :posts {:title title
+                                   :type format
+                                   :content content
+                                   :published (Timestamp. (.getTime (Date.)))}))
 
 (defn post-months [db-spec]
   (m/fetch-results db-spec
