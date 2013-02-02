@@ -8,6 +8,10 @@
   (m/fetch-results db-spec
                    ["SELECT * FROM posts WHERE published IS NOT NULL ORDER BY published desc"]))
 
+(defn post [db-spec id]
+  (first (m/fetch-results db-spec
+                          ["SELECT * FROM posts WHERE id=?" id])))
+
 (defn post-months [db-spec]
   (m/fetch-results db-spec
                    [(str "SELECT cast(extract(year from published) as int) AS year,"

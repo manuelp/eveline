@@ -27,6 +27,11 @@
                              (apply data/month-posts
                                     (cons db-spec (map read-string [year month])))
                              (data/post-months db-spec))))
+  (ccore/GET "/posts/:id" [id]
+             (views/layout (data/conf-param db-spec "blog-title")
+                           (data/conf-param db-spec "tag-line")
+                           [(data/post db-spec (Integer/parseInt id))]
+                           (data/post-months db-spec)))
   (croute/not-found "There is nothing like that here, sorry."))
 
 (def routes
