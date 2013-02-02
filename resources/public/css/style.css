@@ -14,6 +14,18 @@ p, li {
 
 header#page_header {
     width: 100%;
+    margin-bottom: 2em;
+    padding: 0;
+}
+
+header#page_header h1,h2,h3,h4,h5,h6 {
+    margin: 0 0 5px 0;
+}
+
+header#page_header nav {
+    margin-bottom: 10px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 header#page_header nav ul {
@@ -24,8 +36,17 @@ header#page_header nav ul {
 
 header#page_header nav ul li {
     padding: 0;
-    margin: 0 20px 0 0;
+    margin: 0 10px 0 0;
     display: inline;
+}
+
+header#page_header nav ul li a {
+    text-decoration: none;
+    color: blue;
+}
+
+header#page_header nav ul li a:hover {
+    background-color: #eee;
 }
 
 section#posts {
@@ -39,6 +60,14 @@ section#posts aside {
     margin-left: 5%;
     font-size: 20px;
     line-height: 40px;
+}
+
+article.post header .title {
+    margin-bottom: 5px;
+}
+
+article.post header p {
+    font-size: small;
 }
 
 section#sidebar {
