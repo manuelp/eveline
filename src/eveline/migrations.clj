@@ -22,6 +22,10 @@
     (jdbc/with-query-results res query
       (doall res))))
 
+(defmacro run-transaction [db-spec & forms]
+  `(jdbc/with-connection ~db-spec
+     (jdbc/transaction ~@forms)))
+
 ;; ## Actual eveline-specific code ##
 
 (defn add-posts-table [db-spec]
@@ -44,8 +48,17 @@
                        [:created "timestamp default now()"]
                        [:modified "timestamp default now()"])))
 
+(defn add-base-config [db-spec]
+  (run-transaction db-spec
+                   (insert-record db-spec :configuration {:parameter "blog-title"
+                                                          :value "Lambda Land"})
+                   (insert-record db-spec :configuration {:parameter "tag-line"
+                                                          :value "Making sense of software development."})))
+
+;; Additional migrations should be added here (w/ a unique ID)
 (def migrations {1 add-posts-table
-                 2 add-conf-table})
+                 2 add-conf-table
+                 3 add-base-config})
 
 (defn create-migrations-table [db-spec]
   (jdbc/with-connection db-spec

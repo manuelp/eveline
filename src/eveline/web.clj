@@ -9,19 +9,24 @@
                      [migrations :as ddl])
             [clj-time.core :as time]))
 
+;; Should be read from env variable DATABASE_URL
 (def db-spec "postgres://eveline:eveline@localhost/eveline")
 
 (ccore/defroutes routes*
   (croute/resources "/")
   (ccore/GET "/" []
-             (views/layout "Lambda Land"
+             (views/layout (data/conf-param db-spec "blog-title")
+                           (data/conf-param db-spec "tag-line")
                            (data/posts db-spec)
                            (data/post-months db-spec)))
   (ccore/GET "/archive/:year/:month" [year month]
-             (views/layout (str "Lambda Land: " year "-" month " archive")
-                           (apply data/month-posts
-                                  (cons db-spec (map read-string [year month])))
-                           (data/post-months db-spec)))
+             (let [title (str (data/conf-param db-spec "blog-title")
+                              ": " year "-" month " archive")]
+               (views/layout title
+                             (data/conf-param db-spec "tag-line")
+                             (apply data/month-posts
+                                    (cons db-spec (map read-string [year month])))
+                             (data/post-months db-spec))))
   (croute/not-found "There is nothing like that here, sorry."))
 
 (def routes

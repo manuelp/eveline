@@ -35,8 +35,10 @@
   [:li]  (h/clone-for [post-month post-months]
                       (h/content (archive-link post-month))))
 
-(h/deftemplate layout "layout.html" [title posts post-months]
+(h/deftemplate layout "layout.html" [title tag-line posts post-months]
   [:head :title] (h/content title)
+  [:#title] (h/content title)
+  [:#tagline] (h/content tag-line)
   [:section#posts] (h/content (for [p posts]
                                 (post p)))
   [:section#sidebar] (h/content (archive-items post-months))
