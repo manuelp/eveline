@@ -72,7 +72,8 @@ article.post header p {
 
 section#sidebar {
     float: left;
-    widht: 25%;
+    width: 25%;
+    padding-left: 9px;
 }
 
 footer#page_footer {

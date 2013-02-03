@@ -68,3 +68,16 @@
     [:footer :#current-year] (let [year (time/year (time/now))] 
                                (if (> year 2013)
                                  (h/append (str year)))))
+
+(defn- about-page []
+  (let [about-md (slurp "resources/about.md")]
+    (md/md-to-html-string about-md)))
+
+(h/deftemplate about "layout.html" [title tag-line]
+    [:head :title] (h/content title)
+    [:#title] (h/content title)
+    [:#tagline] (h/content tag-line)
+    [:#posts] (h/html-content (about-page))
+    [:footer :#current-year] (let [year (time/year (time/now))] 
+                               (if (> year 2013)
+                                 (h/append (str year)))))
