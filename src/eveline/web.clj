@@ -13,8 +13,8 @@
                      [migrations :as ddl])
             [clj-time.core :as time]))
 
-;; Should be read from env variable DATABASE_URL
-(def db-spec "postgres://eveline:eveline@localhost/eveline")
+(def db-spec (or (System/getenv "DATABASE_URL")
+                 "postgres://eveline:eveline@localhost/eveline"))
 
 (ccore/defroutes routes*
   (croute/resources "/")
@@ -51,13 +51,19 @@
   (croute/not-found "There is nothing like that here, sorry."))
 
 (def users {"manuel" {:username "manuel"
-                      :password (creds/hash-bcrypt (or (System/getenv "EVELINE_PASSWORD")
-                                                       "iron-man"))
+                      :password (or (System/getenv "EVELINE_PASSWORD")
+                                    "iron-man")
                       :roles #{::user ::admin}}})
+
+(defn- plain-credentials-fn [known supplied]
+  (if-let [relevant (known (:username supplied))]
+    (if (= (:password supplied)
+           (:password relevant))
+      (dissoc relevant :password))))
 
 (def routes
   (handler/site (friend/authenticate routes*
-                                     {:credential-fn (partial creds/bcrypt-credential-fn users)
+                                     {:credential-fn (partial plain-credentials-fn users)
                                       :workflows [(workflows/interactive-form)]})))
 
 (defn start
