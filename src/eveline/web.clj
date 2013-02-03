@@ -74,3 +74,8 @@
   ([port] (do (ddl/migrate db-spec ddl/migrations)
               (adapter/run-jetty #'routes {:port port
                                            :join? false}))))
+
+(defn -main [& args]
+  (if-let [custom-port (System/getenv "PORT")]
+    (start (Integer/parseInt custom-port))
+    (start)))
