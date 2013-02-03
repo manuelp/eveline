@@ -3,3 +3,7 @@ Welcome! My name is Manuel Paccagnella, and I'm your host for this blog. I was b
 In my day job I work mainly with Java and Javascript, but I have a great passion and curiosity for the world of software development and I’m constantly learning. I've a particular interest in *functional programming*, and right now I'm particularly fond of [Clojure](http://clojure.org/). If you attended [EuroClojure 2012](http://euroclojure.com/2012/) you have probably saw me there :)
 
 I like to read, study, [write some code](https://github.com/manuelp) and occasionally post in this blog. 
+
+You can contact me at the following email address: 
+
+![manuel dot paccagnella at gmail dot com](/images/email.png)
