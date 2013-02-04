@@ -19,6 +19,12 @@ header#page_header {
     padding: 0;
 }
 
+header#page_header #site-logo {
+    float: left;
+    display: block;
+    margin-right: 5px;
+}
+
 header#page_header #title {
     font-size: 45px;
     border-bottom: 1px solid black;
