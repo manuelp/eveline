@@ -66,6 +66,16 @@ article.post header p {
     font-size: small;
 }
 
+article.post blockquote {
+    background-color: #ddd;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+article.post blockquote p {
+    margin: 0;
+}
+
 section#sidebar {
     float: left;
     width: 25%;
