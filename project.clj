@@ -12,7 +12,7 @@
                  [clj-time "0.4.4"]
                  [org.clojure/java.jdbc "0.2.3"]
                  [postgresql/postgresql "9.1-901-1.jdbc4"]
-                 [markdown-clj "0.9.16"]
+                 [markdown-clj "0.9.19"]
                  [com.cemerick/friend "0.1.3"]]
   :ring {:handler eveline.web/routes}
   :main eveline.web)
