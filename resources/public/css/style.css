@@ -2,6 +2,7 @@ body {
     width: 960px;
     margin: 15px auto;
     font-family: 'Cambo', Arial, sans-serif;
+    font-size: 14.5px;
 }
 
 p {
@@ -16,6 +17,17 @@ header#page_header {
     width: 100%;
     margin-bottom: 2em;
     padding: 0;
+}
+
+header#page_header #title {
+    font-size: 45px;
+    border-bottom: 1px solid black;
+    margin-bottom: 0;
+}
+
+header#page_header #tagline {
+    font-size: 20px;
+    margin-top: 2px;
 }
 
 header#page_header nav {
@@ -47,7 +59,31 @@ header#page_header nav ul li a:hover {
 
 section#posts {
     float: left;
-    width: 74%;
+    width: 65%;
+}
+
+section#posts h1 {
+    font-size: 26px;
+}
+
+section#posts h2 {
+    font-size: 22px;
+}
+
+section#posts h3 {
+    font-size: 20px;
+}
+
+section#posts h4 {
+    font-size: 18px;
+}
+
+section#posts h5 {
+    font-size: 16px;
+}
+
+section#posts h6 {
+    font-size: 14px;
 }
 
 section#posts aside {
@@ -56,6 +92,8 @@ section#posts aside {
     margin-left: 5%;
     font-size: 20px;
     line-height: 40px;
+    background-color: #ddd;
+    border-radius: 10px;
 }
 
 article.post header .title {
@@ -63,7 +101,7 @@ article.post header .title {
 }
 
 article.post header p {
-    font-size: small;
+    font-size: x-small;
 }
 
 article.post blockquote {
@@ -79,7 +117,9 @@ article.post blockquote p {
 section#sidebar {
     float: left;
     width: 25%;
-    padding-left: 9px;
+    margin-left: 85px;
+    padding-left: 10px;
+    border-left: 1px solid black;
 }
 
 footer#page_footer {

@@ -16,7 +16,7 @@
           :default content)))
 
 (h/defsnippet post "post.html" [:article] [post]
-  [:h2.title] (h/content (:title post))
+  [:h1.title] (h/content (:title post))
   [:header :.post-link] (h/set-attr :href (str "/posts/" (:id post)))
   [:header :p :time] (h/do->
                       (h/set-attr :datetime (format-date (:published post)
