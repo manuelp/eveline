@@ -114,6 +114,12 @@ article.post blockquote p {
     margin: 0;
 }
 
+article.post .divider {
+    display: block;
+    margin: 0 auto;
+    width: 125px;
+}
+
 section#sidebar {
     float: left;
     width: 25%;
