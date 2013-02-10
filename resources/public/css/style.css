@@ -54,12 +54,12 @@ header#page_header nav ul li {
     display: inline;
 }
 
-header#page_header nav ul li a {
+header#page_header nav .nav-link {
     text-decoration: none;
     color: blue;
 }
 
-header#page_header nav ul li a:hover {
+header#page_header nav ul li .nav-link:hover {
     background-color: #eee;
 }
 

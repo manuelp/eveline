@@ -2,7 +2,9 @@
   (:require [net.cgrand.enlive-html :as h]
             (clj-time [core :as time]
                       [format :as tformat])
-            [markdown.core :as md])
+            [markdown.core :as md]
+            [cemerick.friend :as friend])
+  (:use clojure.pprint)
   (:import org.joda.time.DateTime))
 
 (defn format-date [date formatter]
@@ -36,10 +38,28 @@
   [:li]  (h/clone-for [post-month post-months]
                       (h/content (archive-link post-month))))
 
+(def nav-links [{:text "Home"
+                 :href "/"}
+                {:text "About"
+                 :href "/about"}])
+
+(h/defsnippet nav-link "layout.html" [:#page_header :nav :.nav-link] [link]
+  [:a] (h/do->
+        (h/set-attr :href (:href link))
+        (h/content (:text link))))
+
+(h/defsnippet nav-bar "layout.html" [:#page_header :nav :ul] [links]
+  [:li] (h/clone-for [link links]
+                     (h/content (nav-link link))))
+
 (h/deftemplate layout "layout.html" [title tag-line posts post-months]
   [:head :title] (h/content title)
   [:#title] (h/content title)
   [:#tagline] (h/content tag-line)
+  [:#page_header :nav :ul] (if (friend/authorized? #{:admin} friend/*identity*)
+                             (h/content (nav-bar (conj nav-links {:text "Logout"
+                                                                  :href "/logout"})))
+                             (h/content (nav-bar nav-links)))
   [:section#posts] (h/content (for [p posts]
                                 (post p)))
   [:section#sidebar] (h/content (archive-items post-months))

@@ -1,6 +1,7 @@
 (ns eveline.web
   (:require [ring.adapter.jetty :as adapter]
             [ring.util.response :as rresponse]
+            [ring.middleware.stacktrace :as rstacktrace]
             (compojure
              [core :as ccore]
              [route :as croute]
@@ -23,9 +24,9 @@
                                (data/conf-param db-spec "tag-line")))
   (ccore/GET "/" []
              (views/layout (data/conf-param db-spec "blog-title")
-                           (data/conf-param db-spec "tag-line")
-                           (data/posts db-spec)
-                           (data/post-months db-spec)))
+                             (data/conf-param db-spec "tag-line")
+                             (data/posts db-spec)
+                             (data/post-months db-spec)))
   (ccore/GET "/about" []
              (views/about (data/conf-param db-spec "blog-title")
                           (data/conf-param db-spec "tag-line")))
@@ -38,11 +39,11 @@
                                     (cons db-spec (map read-string [year month])))
                              (data/post-months db-spec))))
   (ccore/GET "/publish" []
-             (friend/authorize #{::admin}
+             (friend/authorize #{:admin}
                                (views/publish (data/conf-param db-spec "blog-title")
                                               (data/conf-param db-spec "tag-line"))))
   (ccore/POST "/publish" [title format content]
-              (friend/authorize #{::admin}
+              (friend/authorize #{:admin}
                                 (do
                                   (data/publish-post db-spec title format content)
                                   (rresponse/redirect-after-post "/"))))
@@ -51,12 +52,13 @@
                            (data/conf-param db-spec "tag-line")
                            [(data/post db-spec (Integer/parseInt id))]
                            (data/post-months db-spec)))
+  (friend/logout (ccore/ANY "/logout" request (rresponse/redirect "/")))
   (croute/not-found "There is nothing like that here, sorry."))
 
 (def users {"manuel" {:username "manuel"
                       :password (or (System/getenv "EVELINE_PASSWORD")
                                     "iron-man")
-                      :roles #{::user ::admin}}})
+                      :roles #{:user :admin}}})
 
 (defn- plain-credentials-fn [known supplied]
   (if-let [relevant (known (:username supplied))]
@@ -65,9 +67,11 @@
       (dissoc relevant :password))))
 
 (def routes
-  (handler/site (friend/authenticate routes*
-                                     {:credential-fn (partial plain-credentials-fn users)
-                                      :workflows [(workflows/interactive-form)]})))
+  (-> #'routes*
+      (rstacktrace/wrap-stacktrace)
+      (friend/authenticate {:credential-fn (partial plain-credentials-fn users)
+                           :workflows [(workflows/interactive-form)]})
+      (handler/site)))
 
 (defn start
   ([] (start 8080))
@@ -79,3 +83,8 @@
   (if-let [custom-port (System/getenv "PORT")]
     (start (Integer/parseInt custom-port))
     (start)))
+
+;; Per l'instarepl:
+;(require '[eveline.web :as web])
+;(require '[ring.adapter.jetty :as adapter])
+;(defonce server (adapter/run-jetty #'web/routes {:port 8080 :join? false}))
