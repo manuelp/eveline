@@ -29,8 +29,9 @@
                            (data/conf-param db-spec "tag-line")
                            (data/posts db-spec)
                            (data/post-months db-spec)))
-  (ccore/GET "/about" []
-             (views/about (data/conf-param db-spec "blog-title")
+  (ccore/GET "/about" request
+             (views/about request
+                          (data/conf-param db-spec "blog-title")
                           (data/conf-param db-spec "tag-line")))
   (ccore/GET "/archive/:year/:month" [year month :as request]
              (let [title (str (data/conf-param db-spec "blog-title")

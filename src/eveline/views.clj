@@ -66,18 +66,19 @@ All information about identity and roles is in the request, and friend can extra
         (h/set-attr :href (:href link))
         (h/content (:text link))))
 
-(h/defsnippet nav-bar "layout.html" [:#page_header :nav :ul] [links]
-  [:li] (h/clone-for [link links]
-                     (h/content (nav-link link))))
+(h/defsnippet nav-bar "layout.html" [:#page_header :nav :ul] [request base-links]
+  [:li] (let [links (if (authorized? request #{:admin})
+                      (conj base-links {:text "Logout"
+                                        :href "/logout"})
+                      base-links)]
+          (h/clone-for [link links]
+                       (h/content (nav-link link)))))
 
 (h/deftemplate layout "layout.html" [request title tag-line posts post-months]
   [:head :title] (h/content title)
   [:#title] (h/content title)
   [:#tagline] (h/content tag-line)
-  [:#page_header :nav :ul] (if (authorized? request #{:admin})
-                             (h/content (nav-bar (conj nav-links {:text "Logout"
-                                                                  :href "/logout"})))
-                             (h/content (nav-bar nav-links)))
+  [:#page_header :nav :ul] (h/content (nav-bar request nav-links))
   [:section#posts] (h/content (for [p posts]
                                 (post request p)))
   [:section#sidebar] (h/content (archive-items post-months))
@@ -119,10 +120,11 @@ All information about identity and roles is in the request, and friend can extra
   (let [about-md (slurp "resources/about.md")]
     (md/md-to-html-string about-md)))
 
-(h/deftemplate about "layout.html" [title tag-line]
+(h/deftemplate about "layout.html" [request title tag-line]
     [:head :title] (h/content title)
     [:#title] (h/content title)
     [:#tagline] (h/content tag-line)
+    [:#page_header :nav :ul] (h/content (nav-bar request nav-links))
     [:#posts] (h/html-content (about-page))
     [:footer :#current-year] (let [year (time/year (time/now))] 
                                (if (> year 2013)
