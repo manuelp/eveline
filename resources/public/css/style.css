@@ -142,5 +142,7 @@ footer#page_footer {
     clear: both;
     width: 100%;
     display: block;
+    border-top: 1px solid black;
     text-align: center;
+    font-size: small;
 }
