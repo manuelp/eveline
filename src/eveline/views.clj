@@ -24,16 +24,25 @@ All information about identity and roles is in the request, and friend can extra
   [request roles]
   (not (= nil (friend/authorized? roles request))))
 
+(defn- date-element [post date-key]
+  (h/do->
+   (h/set-attr :datetime (format-date (date-key post) :date-time))
+   (h/content (format-date (date-key post) :rfc822))))
+
+(defn- modified? [post]
+  (not (nil? (:modified post))))
+
+(h/defsnippet updated "post.html" [:header :.update] [post]
+  [:.update :time] (date-element post :modified))
+
 (h/defsnippet post "post.html" [:article] [request post]
   [:h1.title] (h/content (:title post))
   [:header :.post-link] (h/set-attr :href (str "/posts/" (:id post)))
   [:header :.edit-link] (if (authorized? request #{:admin})
                           (h/set-attr :href (str"/post/edit/" (:id post))))
-  [:header :p :time] (h/do->
-                      (h/set-attr :datetime (format-date (:published post)
-                                                         :date-time))
-                      (h/content (format-date (:published post)
-                                              :rfc822)))
+  [:header :p :time] (date-element post :published)
+  [:header :.update] (when (modified? post)
+                       (h/content (updated post)))
   [:section] (h/content (h/html-snippet (format-content post))))
 
 (h/defsnippet archive-link "archives.html" [:a] [post-month]
