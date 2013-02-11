@@ -109,9 +109,9 @@ All information about identity and roles is in the request, and friend can extra
     [:head :title] (h/content title)
     [:#title] (h/content title)
     [:#tagline] (h/content tag-line)
-    [:#main] (h/content (if (nil? post)
+    [:#main] (h/content (if (empty? post)
                           (publish-form)
-                          (compiled-publish-form post)))
+                          (compiled-publish-form (first post))))
     [:footer :#current-year] (let [year (time/year (time/now))] 
                                (if (> year 2013)
                                  (h/append (str year)))))
