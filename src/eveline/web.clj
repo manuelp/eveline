@@ -82,11 +82,14 @@
            (:password relevant))
       (dissoc relevant :password))))
 
+;; Warning: order is important! `friend/authenticate` should be the
+;; first middleware, so that it can redirect to /login as specified in
+;; the workflow.
 (def routes
   (-> #'routes*
-      (rstacktrace/wrap-stacktrace)
       (friend/authenticate {:credential-fn (partial plain-credentials-fn users)
-                           :workflows [(workflows/interactive-form)]})
+                            :workflows [(workflows/interactive-form)]})
+      (rstacktrace/wrap-stacktrace)
       (handler/site)))
 
 (defn start
@@ -100,7 +103,7 @@
     (start (Integer/parseInt custom-port))
     (start)))
 
-;; Per l'instarepl:
+;; For LT instarepl:
 ;(require '[eveline.web :as web])
 ;(require '[ring.adapter.jetty :as adapter])
 ;(defonce server (adapter/run-jetty #'web/routes {:port 8080 :join? false}))
