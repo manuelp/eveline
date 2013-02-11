@@ -105,7 +105,7 @@ All information about identity and roles is in the request, and friend can extra
   [[:input (h/attr= :name "format")]] (h/set-attr :value (:type post))
   [[:textarea (h/attr= :name "content")]] (h/content (:content post)))
 
-(h/deftemplate publish "admin.html" [title tag-line post]
+(h/deftemplate publish "admin.html" [title tag-line & post]
     [:head :title] (h/content title)
     [:#title] (h/content title)
     [:#tagline] (h/content tag-line)
