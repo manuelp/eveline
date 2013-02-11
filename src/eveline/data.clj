@@ -20,6 +20,14 @@
                                    :content content
                                    :published (Timestamp. (.getTime (Date.)))}))
 
+(defn update-post [db-spec id title format content]
+  (jdbc/with-connection db-spec
+    (jdbc/update-values :posts ["id=?" id]
+                        {:title title
+                         :type format
+                         :content content
+                         :modified (Timestamp. (.getTime (Date.)))})))
+
 (defn post-months [db-spec]
   (m/fetch-results db-spec
                    [(str "SELECT cast(extract(year from published) as int) AS year,"

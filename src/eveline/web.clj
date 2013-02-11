@@ -12,7 +12,8 @@
             (eveline [views :as views]
                      [data :as data]
                      [migrations :as ddl])
-            [clj-time.core :as time]))
+            [clj-time.core :as time])
+  (:use clojure.pprint))
 
 (def db-spec (or (System/getenv "DATABASE_URL")
                  "postgres://eveline:eveline@localhost/eveline"))
@@ -22,18 +23,20 @@
   (ccore/GET "/login" []
              (views/login-page (data/conf-param db-spec "blog-title")
                                (data/conf-param db-spec "tag-line")))
-  (ccore/GET "/" []
-             (views/layout (data/conf-param db-spec "blog-title")
-                             (data/conf-param db-spec "tag-line")
-                             (data/posts db-spec)
-                             (data/post-months db-spec)))
+  (ccore/GET "/" request
+             (views/layout request
+                           (data/conf-param db-spec "blog-title")
+                           (data/conf-param db-spec "tag-line")
+                           (data/posts db-spec)
+                           (data/post-months db-spec)))
   (ccore/GET "/about" []
              (views/about (data/conf-param db-spec "blog-title")
                           (data/conf-param db-spec "tag-line")))
-  (ccore/GET "/archive/:year/:month" [year month]
+  (ccore/GET "/archive/:year/:month" [year month :as request]
              (let [title (str (data/conf-param db-spec "blog-title")
                               ": " year "-" month " archive")]
-               (views/layout title
+               (views/layout request 
+                             title
                              (data/conf-param db-spec "tag-line")
                              (apply data/month-posts
                                     (cons db-spec (map read-string [year month])))
@@ -47,11 +50,23 @@
                                 (do
                                   (data/publish-post db-spec title format content)
                                   (rresponse/redirect-after-post "/"))))
-  (ccore/GET "/posts/:id" [id]
-             (views/layout (data/conf-param db-spec "blog-title")
+  (ccore/GET "/posts/:id" [id :as request]
+             (views/layout request
+                           (data/conf-param db-spec "blog-title")
                            (data/conf-param db-spec "tag-line")
                            [(data/post db-spec (Integer/parseInt id))]
                            (data/post-months db-spec)))
+  (ccore/GET "/post/edit/:id" [id]
+             (friend/authorize #{:admin}
+                               (views/publish (data/conf-param db-spec "blog-title")
+                                              (data/conf-param db-spec "tag-line")
+                                              (data/post db-spec (Integer/parseInt id)))))
+  (ccore/POST "/post/edit/:id" [id title format content]
+              (friend/authorize #{:admin}
+                                (do
+                                  (data/update-post db-spec (Integer/parseInt id)
+                                                    title format content)
+                                  (rresponse/redirect (str "/posts/" id)))))
   (friend/logout (ccore/ANY "/logout" request (rresponse/redirect "/")))
   (croute/not-found "There is nothing like that here, sorry."))
 
