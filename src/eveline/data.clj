@@ -14,6 +14,12 @@
   (first (m/fetch-results db-spec
                           ["SELECT * FROM posts WHERE id=?" id])))
 
+(defn post-tags [db-spec id]
+  (if-let [tags (m/fetch-results db-spec
+                                 ["select t.id,t.label,l.post from tags t left join post_tags l on l.tag=t.id where l.post=?" id])]
+    (vec (map :label tags))
+    []))
+
 (defn publish-post [db-spec title format content]
   (m/insert-record db-spec :posts {:title title
                                    :type format

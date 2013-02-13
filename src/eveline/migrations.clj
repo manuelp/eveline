@@ -55,10 +55,20 @@
                    (insert-record db-spec :configuration {:parameter "tag-line"
                                                           :value "Making sense of software development."})))
 
+(defn add-tags-table [db-spec]
+  (run-transaction db-spec
+                   (jdbc/create-table :tags
+                                      [:id "serial primary key"]
+                                      [:label "varchar(256)"])
+                   (jdbc/create-table :post_tags
+                                      [:post "serial not null references posts (id)"]
+                                      [:tag "integer not null references tags (id)"])))
+
 ;; Additional migrations should be added here (w/ a unique ID)
 (def migrations {1 add-posts-table
                  2 add-conf-table
-                 3 add-base-config})
+                 3 add-base-config
+                 4 add-tags-table})
 
 (defn create-migrations-table [db-spec]
   (jdbc/with-connection db-spec
