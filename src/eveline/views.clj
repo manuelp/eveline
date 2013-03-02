@@ -3,7 +3,8 @@
             (clj-time [core :as time]
                       [format :as tformat])
             [markdown.core :as md]
-            [cemerick.friend :as friend])
+            [cemerick.friend :as friend]
+            [eveline.data :as data])
   (:use clojure.pprint)
   (:import org.joda.time.DateTime))
 
@@ -37,12 +38,14 @@ All information about identity and roles is in the request, and friend can extra
 
 (h/defsnippet post "post.html" [:article] [request post]
   [:h1.title] (h/content (:title post))
-  [:header :.post-link] (h/set-attr :href (str "/posts/" (:id post)))
-  [:header :.edit-link] (if (authorized? request #{:admin})
+  [:header :p.post-info :.post-link] (h/set-attr :href (str "/posts/" (:id post)))
+  [:header :p.post-info :.edit-link] (if (authorized? request #{:admin})
                           (h/set-attr :href (str"/post/edit/" (:id post))))
-  [:header :p :time] (date-element post :published)
+  [:header :p.post-info :time] (date-element post :published)
   [:header :.update] (when (modified? post)
                        (h/content (updated post)))
+  [:header :.tags :li] (h/clone-for [tag (data/post-tags "postgres://eveline:eveline@localhost/eveline" (:id post))]
+                                    (h/content tag))
   [:section] (h/content (h/html-snippet (format-content post))))
 
 (h/defsnippet archive-link "archives.html" [:a] [post-month]
