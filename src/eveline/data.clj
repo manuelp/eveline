@@ -20,6 +20,13 @@
     (vec (map :label tags))
     []))
 
+(defn posts-id-by-category [db-spec category]
+  (map :post (m/fetch-results db-spec
+             	      ["select l.post from post_tags l left join tags t on l.tag=t.id where t.label=?" category])))
+
+(defn posts-by-category [db-spec category]
+  (map #(post db-spec %) (posts-id-by-category db-spec category)))
+
 (defn publish-post [db-spec title format content]
   (m/insert-record db-spec :posts {:title title
                                    :type format
