@@ -162,6 +162,11 @@ section#sidebar {
     border-left: 1px solid black;
 }
 
+section.rss-feed img {
+	width: 70px;
+  height: 70px;
+}
+
 footer#page_footer {
     clear: both;
     width: 100%;
