@@ -4,7 +4,8 @@
                       [format :as tformat])
             [markdown.core :as md]
             [cemerick.friend :as friend]
-            [eveline.data :as data])
+            [eveline.data :as data]
+            [eveline.web :as web])
   (:use clojure.pprint)
   (:import org.joda.time.DateTime))
 
@@ -36,6 +37,11 @@ All information about identity and roles is in the request, and friend can extra
 (h/defsnippet updated "post.html" [:header :.update] [post]
   [:.update :time] (date-element post :modified))
 
+(h/defsnippet category-link "post.html" [:header :.tags :li :a] [category]
+              [:a] (h/do->
+                    (h/set-attr :href (str "/category/" category))
+                    (h/content category)))
+
 (h/defsnippet post "post.html" [:article] [request post]
   [:h1.title] (h/content (:title post))
   [:header :p.post-info :.post-link] (h/set-attr :href (str "/posts/" (:id post)))
@@ -44,8 +50,8 @@ All information about identity and roles is in the request, and friend can extra
   [:header :p.post-info :time] (date-element post :published)
   [:header :.update] (when (modified? post)
                        (h/content (updated post)))
-  [:header :.tags :li] (h/clone-for [tag (data/post-tags "postgres://eveline:eveline@localhost/eveline" (:id post))]
-                                    (h/content tag))
+  [:header :.tags :li] (h/clone-for [tag (data/post-tags web/db-spec (:id post))]
+                                    (h/content (category-link tag)))
   [:section] (h/content (h/html-snippet (format-content post))))
 
 (h/defsnippet archive-link "archives.html" [:a] [post-month]
