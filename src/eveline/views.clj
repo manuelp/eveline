@@ -4,15 +4,15 @@
                       [format :as tformat])
             [markdown.core :as md]
             [cemerick.friend :as friend]
-            [eveline.data :as data]
-            [eveline.web :as web])
+            [eveline.data :as data])
   (:use clojure.pprint)
   (:import org.joda.time.DateTime))
 
 (defn format-date [date formatter]
   (tformat/unparse (tformat/formatters formatter) (DateTime. date)))
 
-(defn- format-content [post]
+; TODO Move to dedicated ns?
+(defn format-content [post]
   (let [content (:content post)
         type (:type post)]
     (cond (= type "text/html") content
@@ -42,6 +42,10 @@ All information about identity and roles is in the request, and friend can extra
                     (h/set-attr :href (str "/category/" category))
                     (h/content category)))
 
+; TODO Remove duplication w/ eveline.web on this one
+(def db-spec (or (System/getenv "DATABASE_URL")
+                 "postgres://eveline:eveline@localhost/eveline"))
+
 (h/defsnippet post "post.html" [:article] [request post]
   [:h1.title] (h/content (:title post))
   [:header :p.post-info :.post-link] (h/set-attr :href (str "/posts/" (:id post)))
@@ -50,7 +54,7 @@ All information about identity and roles is in the request, and friend can extra
   [:header :p.post-info :time] (date-element post :published)
   [:header :.update] (when (modified? post)
                        (h/content (updated post)))
-  [:header :.tags :li] (h/clone-for [tag (data/post-tags web/db-spec (:id post))]
+  [:header :.tags :li] (h/clone-for [tag (data/post-tags db-spec (:id post))]
                                     (h/content (category-link tag)))
   [:section] (h/content (h/html-snippet (format-content post))))
 
