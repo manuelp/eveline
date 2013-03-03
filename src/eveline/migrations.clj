@@ -64,11 +64,17 @@
                                       [:post "serial not null references posts (id)"]
                                       [:tag "integer not null references tags (id)"])))
 
+(defn add-domain-name-conf [db-spec]
+  (run-transaction db-spec
+                    (insert-record db-spec :configuration {:parameter "domain-name"
+                                                           :value "http://localhost:8080"})))
+
 ;; Additional migrations should be added here (w/ a unique ID)
 (def migrations {1 add-posts-table
                  2 add-conf-table
                  3 add-base-config
-                 4 add-tags-table})
+                 4 add-tags-table
+                 5 add-domain-name-conf})
 
 (defn create-migrations-table [db-spec]
   (jdbc/with-connection db-spec

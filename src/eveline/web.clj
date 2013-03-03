@@ -11,7 +11,8 @@
                              [credentials :as creds])
             (eveline [views :as views]
                      [data :as data]
-                     [migrations :as ddl])
+                     [migrations :as ddl]
+                     [rss :as rss])
             [clj-time.core :as time])
   (:use clojure.pprint))
 
@@ -74,6 +75,12 @@
                                   (data/update-post db-spec (Integer/parseInt id)
                                                     title format content)
                                   (rresponse/redirect (str "/posts/" id)))))
+                 
+  (ccore/GET "/feed" []
+             (rss/feed (data/conf-param db-spec "blog-title")
+                       (data/conf-param db-spec "tag-line")
+                       (data/conf-param db-spec "domain-name")
+                       (data/posts db-spec)))
   (friend/logout (ccore/ANY "/logout" request (rresponse/redirect "/")))
   (croute/not-found "There is nothing like that here, sorry."))
 

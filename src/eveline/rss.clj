@@ -6,13 +6,13 @@
   "Generate a RSS entry from a post."
   [base-url post]
    {:title (:title post)
-    :link (str base-url "/post/" (:id post))
+    :link (str base-url "/posts/" (:id post))
     :description (:content post)
     :pubDate (:published post)})
 
 (defn feed 
   "Generate a RSS feed from a seq of posts."
-  [title description link base-url posts]
+  [title description base-url posts]
   (let [channel-data {:title title :description description :link base-url} 
         gen-rss (partial rss/channel-xml false)
         rss-entry (partial entry base-url)]

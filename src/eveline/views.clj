@@ -95,6 +95,9 @@ All information about identity and roles is in the request, and friend can extra
           (h/clone-for [link links]
                        (h/content (nav-link link)))))
 
+(h/defsnippet rss-feed "rss-feed.html" [:section.rss-feed] [feed-url]
+              [:a] (h/set-attr :href feed-url))
+
 (h/deftemplate layout "layout.html" [request title tag-line posts post-months]
   [:head :title] (h/content title)
   [:#title] (h/content title)
@@ -102,8 +105,9 @@ All information about identity and roles is in the request, and friend can extra
   [:#page_header :nav :ul] (h/content (nav-bar request nav-links))
   [:section#posts] (h/content (for [p posts]
                                 (post request p)))
-  [:section#sidebar] (h/content (archive-items post-months)
-                      (categories (data/categories db-spec)))
+  [:section#sidebar] (h/content (rss-feed "/feed")
+                      					(archive-items post-months)
+                                (categories (data/categories db-spec)))
   [:footer :#current-year] (let [year (time/year (time/now))] 
                              (if (> year 2013)
                                (h/append (str year)))))
