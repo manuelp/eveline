@@ -57,7 +57,7 @@ All information about identity and roles is in the request, and friend can extra
                                     (h/content (category-link tag)))
   [:section] (h/content (h/html-snippet (format-content post))))
 
-(h/defsnippet category-link [:a] [category]
+(h/defsnippet category-link "categories.html" [:a] [category]
               [:a] (h/do->
                     (h/set-attr :href (str "/category/" category))
                     (h/content category)))
