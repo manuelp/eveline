@@ -11,7 +11,6 @@
 (defn format-date [date formatter]
   (tformat/unparse (tformat/formatters formatter) (DateTime. date)))
 
-; TODO Move to dedicated ns?
 (defn format-content [post]
   (let [content (:content post)
         type (:type post)]
@@ -58,6 +57,15 @@ All information about identity and roles is in the request, and friend can extra
                                     (h/content (category-link tag)))
   [:section] (h/content (h/html-snippet (format-content post))))
 
+(h/defsnippet category-link [:a] [category]
+              [:a] (h/do->
+                    (h/set-attr :href (str "/category/" category))
+                    (h/content category)))
+
+(h/defsnippet categories "categories.html" [:nav#categories] [categories]
+             [:li] (h/clone-for [category categories]
+                                (h/content (category-link category))))
+
 (h/defsnippet archive-link "archives.html" [:a] [post-month]
   [:a] (let [month (:month post-month)
              year (:year post-month)]
@@ -94,7 +102,8 @@ All information about identity and roles is in the request, and friend can extra
   [:#page_header :nav :ul] (h/content (nav-bar request nav-links))
   [:section#posts] (h/content (for [p posts]
                                 (post request p)))
-  [:section#sidebar] (h/content (archive-items post-months))
+  [:section#sidebar] (h/content (archive-items post-months)
+                      (categories (data/categories db-spec)))
   [:footer :#current-year] (let [year (time/year (time/now))] 
                              (if (> year 2013)
                                (h/append (str year)))))

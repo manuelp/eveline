@@ -33,6 +33,10 @@
                                    :content content
                                    :published (Timestamp. (.getTime (Date.)))}))
 
+(defn categories [db-spec]
+  (map :label (m/fetch-results db-spec
+              	     ["select label from tags"])))
+
 (defn update-post [db-spec id title format content]
   (jdbc/with-connection db-spec
     (jdbc/update-values :posts ["id=?" id]
