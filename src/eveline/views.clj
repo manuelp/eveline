@@ -136,6 +136,18 @@ All information about identity and roles is in the request, and friend can extra
   [[:input (h/attr= :name "format")]] (h/set-attr :value (:type post))
   [[:textarea (h/attr= :name "content")]] (h/content (:content post)))
 
+(defn post-with-category? [post category db-spec]
+  (some (partial = category) (data/post-tags db-spec (:id post))))
+
+(h/defsnippet tag-checkbox "admin.html" [:section#side :section#categories :ul :li :input] [category & post]
+              [:input] (h/do->
+                        (h/set-attr :name category)
+                        (h/content category)
+                        (if (and (not (empty? post))
+                                 (post-with-category? (first post) category db-spec))
+                          (h/set-attr :checked "checked")
+                          (h/content category))))
+
 (h/deftemplate publish "admin.html" [title tag-line & post]
     [:head :title] (h/content title)
     [:#title] (h/content title)
@@ -143,6 +155,11 @@ All information about identity and roles is in the request, and friend can extra
     [:#main] (h/content (if (empty? post)
                           (publish-form)
                           (compiled-publish-form (first post))))
+    [:section#side :section#categories :ul :li]
+               (h/clone-for [category (data/categories db-spec)]
+                          	  (h/content (if (empty? post)
+                                           (tag-checkbox category)
+                                           (tag-checkbox category (first post)))))
     [:footer :#current-year] (let [year (time/year (time/now))] 
                                (if (> year 2013)
                                  (h/append (str year)))))

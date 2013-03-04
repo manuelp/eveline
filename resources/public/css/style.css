@@ -175,3 +175,17 @@ footer#page_footer {
     text-align: center;
     font-size: small;
 }
+
+/* Admin section */
+section#main {
+	float: left;
+}
+
+section#side {
+	float: right;
+}
+
+section#side section#categories ul {
+	display: block;
+  list-style: none;
+}
