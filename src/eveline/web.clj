@@ -29,7 +29,9 @@
                            (data/conf-param db-spec "blog-title")
                            (data/conf-param db-spec "tag-line")
                            (data/posts db-spec)
-                           (data/post-months db-spec)))
+                           (data/post-months db-spec)
+                           {:caption "Main"
+                              :url "/feed"}))
   (ccore/GET "/about" request
              (views/about request
                           (data/conf-param db-spec "blog-title")
@@ -42,13 +44,18 @@
                              (data/conf-param db-spec "tag-line")
                              (apply data/month-posts
                                     (cons db-spec (map read-string [year month])))
-                             (data/post-months db-spec))))
+                             (data/post-months db-spec)
+                             {:caption "Main"
+                              :url "/feed"})))
   (ccore/GET "/category/:category" [category :as request]
              (let [title (str (data/conf-param db-spec "blog-title")
                               "- Category: " category)]
-               (views/layout request title (data/conf-param db-spec "tag-line")
+               (views/layout request title 
+                             (data/conf-param db-spec "tag-line")
                              (data/posts-by-category db-spec category)
-                             (data/post-months db-spec))))
+                             (data/post-months db-spec)
+                             {:caption category
+                              :url (str "/feed/" category)})))
   (ccore/GET "/publish" []
              (friend/authorize #{:admin}
                                (views/publish (data/conf-param db-spec "blog-title")
@@ -63,7 +70,9 @@
                            (data/conf-param db-spec "blog-title")
                            (data/conf-param db-spec "tag-line")
                            [(data/post db-spec (Integer/parseInt id))]
-                           (data/post-months db-spec)))
+                           (data/post-months db-spec)
+                           {:caption "Main"
+                              :url "/feed"}))
   (ccore/GET "/post/edit/:id" [id]
              (friend/authorize #{:admin}
                                (views/publish (data/conf-param db-spec "blog-title")
@@ -81,6 +90,11 @@
                        (data/conf-param db-spec "tag-line")
                        (data/conf-param db-spec "domain-name")
                        (data/posts db-spec)))
+  (ccore/GET "/feed/:category" [category]
+             (rss/feed (str (data/conf-param db-spec "blog-title") " - Category: " category)
+                       (data/conf-param db-spec "tag-line")
+                       (data/conf-param db-spec "domain-name")
+                       (data/posts-by-category db-spec category)))
   (friend/logout (ccore/ANY "/logout" request (rresponse/redirect "/")))
   (croute/not-found "There is nothing like that here, sorry."))
 

@@ -8,6 +8,10 @@
   (:use clojure.pprint)
   (:import org.joda.time.DateTime))
 
+;; TODO
+;; Views should not depend/use the *data* ns. 
+;; Its responsibility should only be to *render views with data passed explicitly*.
+
 (defn format-date [date formatter]
   (tformat/unparse (tformat/formatters formatter) (DateTime. date)))
 
@@ -99,14 +103,14 @@ All information about identity and roles is in the request, and friend can extra
               [:a] (h/set-attr :href feed-url)
               [:p] (h/content "Feed: " feed-name))
 
-(h/deftemplate layout "layout.html" [request title tag-line posts post-months]
+(h/deftemplate layout "layout.html" [request title tag-line posts post-months feed-data]
   [:head :title] (h/content title)
   [:#title] (h/content title)
   [:#tagline] (h/content tag-line)
   [:#page_header :nav :ul] (h/content (nav-bar request nav-links))
   [:section#posts] (h/content (for [p posts]
                                 (post request p)))
-  [:section#sidebar] (h/content (rss-feed "/feed" "Main")
+  [:section#sidebar] (h/content (rss-feed (:url feed-data) (:caption feed-data))
                       					(archive-items post-months)
                                 (categories (data/categories db-spec)))
   [:footer :#current-year] (let [year (time/year (time/now))] 
