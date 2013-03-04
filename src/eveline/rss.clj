@@ -1,13 +1,14 @@
 (ns eveline.rss
   (:require [clj-rss.core :as rss]
-            [eveline.data :as data]))
+            [eveline.data :as data]
+            [eveline.views :as views]))
 
 (defn- entry 
   "Generate a RSS entry from a post."
   [base-url post]
    {:title (:title post)
     :link (str base-url "/posts/" (:id post))
-    :description (:content post)
+    :description (views/format-content post)
     :pubDate (:published post)})
 
 (defn feed 
