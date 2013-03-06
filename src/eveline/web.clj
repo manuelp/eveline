@@ -19,6 +19,14 @@
 (def db-spec (or (System/getenv "DATABASE_URL")
                  "postgres://eveline:eveline@localhost/eveline"))
 
+(defn extract-categories 
+  "Extract a seq of categories for the new or updated post from the parameters of the corresponding request."
+  [other-params]
+  (let [categories (dissoc other-params :submit)
+        new-categories (clojure.string/split (:new-categories categories) #",")
+        known-categories (vals (dissoc categories :new-categories))]
+    (concat known-categories new-categories)))
+
 (ccore/defroutes routes*
   (croute/resources "/")
   (ccore/GET "/login" []
@@ -82,7 +90,8 @@
               (friend/authorize #{:admin}
                                 (do
                                   (data/update-post db-spec (Integer/parseInt id)
-                                                    title format content)
+                                                    title format content
+                                                    (extract-categories other))
                                   (rresponse/redirect (str "/posts/" id)))))
                  
   (ccore/GET "/feed" []

@@ -134,6 +134,7 @@ All information about identity and roles is in the request, and friend can extra
 (h/defsnippet tag-checkbox "publish-form.html" [:form :section#categories :ul :li :input] [category & post]
               [:input] (h/do->
                         (h/set-attr :name category)
+                        (h/set-attr :value category)
                         (h/content category)
                         (if (and (not (empty? post))
                                  (post-with-category? (first post) category db-spec))

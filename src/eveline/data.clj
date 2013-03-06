@@ -37,13 +37,40 @@
   (map :label (m/fetch-results db-spec
               	     ["select label from tags"])))
 
-(defn update-post [db-spec id title format content]
+(defn category-id [db-spec label]
+  ((comp :id first) (m/fetch-results db-spec
+                   		["select id from tags where label=?" label])))
+
+(defn create-category [db-spec category]
   (jdbc/with-connection db-spec
-    (jdbc/update-values :posts ["id=?" id]
-                        {:title title
-                         :type format
-                         :content content
-                         :modified (Timestamp. (.getTime (Date.)))})))
+    (jdbc/insert-record :tags {:label category})))
+
+; TODO performance: (categories db-spec)
+(defn update-categories [db-spec coll]
+  (letfn [(known? [category]
+                  (some (partial = category) (categories db-spec)))
+          (update-category [category] (if-not (known? category)
+    																	  (create-category db-spec category)))]
+    (doall (map update-category coll))))
+
+(defn make-links [db-spec post-id categories]
+  (map #(hash-map :post post-id :tag (category-id db-spec %)) categories))
+
+(defn define-categories [db-spec post-id categories]
+  (m/run-transaction db-spec 
+    (jdbc/delete-rows :post_tags ["post=?" post-id])
+    (apply (partial jdbc/insert-records :post_tags) (make-links db-spec post-id categories))))
+
+(defn update-post [db-spec id title format content categories]
+  (do
+  	(jdbc/with-connection db-spec
+    	(jdbc/update-values :posts ["id=?" id]
+       {:title title
+        :type format
+        :content content
+        :modified (Timestamp. (.getTime (Date.)))}))
+    (update-categories db-spec categories)
+    (define-categories db-spec id categories)))
 
 (defn post-months [db-spec]
   (m/fetch-results db-spec
