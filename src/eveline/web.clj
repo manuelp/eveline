@@ -23,7 +23,10 @@
   "Extract a seq of categories for the new or updated post from the parameters of the corresponding request."
   [other-params]
   (let [categories (dissoc other-params :submit)
-        new-categories (clojure.string/split (:new-categories categories) #",")
+        extract-new (fn [s]
+                      (when-not (= "" s)
+                        (clojure.string/split s #",")))
+        new-categories (extract-new (:new-categories categories))
         known-categories (vals (dissoc categories :new-categories))]
     (concat known-categories new-categories)))
 
