@@ -27,11 +27,14 @@
 (defn posts-by-category [db-spec category]
   (map #(post db-spec %) (posts-id-by-category db-spec category)))
 
-(defn publish-post [db-spec title format content]
-  (m/insert-record db-spec :posts {:title title
+(defn publish-post [db-spec title format content categories]
+  (let [new-post (m/insert-record db-spec :posts 
+                                  {:title title
                                    :type format
                                    :content content
-                                   :published (Timestamp. (.getTime (Date.)))}))
+                                   :published (Timestamp. (.getTime (Date.)))})]
+    (update-categories db-spec categories)
+    (define-categories db-spec (:id new-post) categories)))
 
 (defn categories [db-spec]
   (map :label (m/fetch-results db-spec

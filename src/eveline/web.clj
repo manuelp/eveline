@@ -68,10 +68,12 @@
              (friend/authorize #{:admin}
                                (views/publish (data/conf-param db-spec "blog-title")
                                               (data/conf-param db-spec "tag-line"))))
-  (ccore/POST "/publish" [title format content]
+  (ccore/POST "/publish" [title format content & other]
               (friend/authorize #{:admin}
                                 (do
-                                  (data/publish-post db-spec title format content)
+                                  (data/publish-post db-spec title 
+                                                     format content 
+                                                     (extract-categories other))
                                   (rresponse/redirect-after-post "/"))))
   (ccore/GET "/posts/:id" [id :as request]
              (views/layout request
