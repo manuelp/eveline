@@ -27,14 +27,9 @@
 (defn posts-by-category [db-spec category]
   (map #(post db-spec %) (posts-id-by-category db-spec category)))
 
-(defn publish-post [db-spec title format content categories]
-  (let [new-post (m/insert-record db-spec :posts 
-                                  {:title title
-                                   :type format
-                                   :content content
-                                   :published (Timestamp. (.getTime (Date.)))})]
-    (update-categories db-spec categories)
-    (define-categories db-spec (:id new-post) categories)))
+(defn create-category [db-spec category]
+  (jdbc/with-connection db-spec
+    (jdbc/insert-record :tags {:label category})))
 
 (defn categories [db-spec]
   (map :label (m/fetch-results db-spec
@@ -43,10 +38,6 @@
 (defn category-id [db-spec label]
   ((comp :id first) (m/fetch-results db-spec
                    		["select id from tags where label=?" label])))
-
-(defn create-category [db-spec category]
-  (jdbc/with-connection db-spec
-    (jdbc/insert-record :tags {:label category})))
 
 ; TODO performance: (categories db-spec)
 (defn update-categories [db-spec coll]
@@ -63,6 +54,15 @@
   (m/run-transaction db-spec 
     (jdbc/delete-rows :post_tags ["post=?" post-id])
     (apply (partial jdbc/insert-records :post_tags) (make-links db-spec post-id categories))))
+
+(defn publish-post [db-spec title format content categories]
+  (let [new-post (m/insert-record db-spec :posts 
+                                  {:title title
+                                   :type format
+                                   :content content
+                                   :published (Timestamp. (.getTime (Date.)))})]
+    (update-categories db-spec categories)
+    (define-categories db-spec (:id new-post) categories)))
 
 (defn update-post [db-spec id title format content categories]
   (do
