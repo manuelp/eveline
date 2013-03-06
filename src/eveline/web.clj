@@ -78,7 +78,7 @@
                                (views/publish (data/conf-param db-spec "blog-title")
                                               (data/conf-param db-spec "tag-line")
                                               (data/post db-spec (Integer/parseInt id)))))
-  (ccore/POST "/post/edit/:id" [id title format content]
+  (ccore/POST "/post/edit/:id" [id title format content & other]
               (friend/authorize #{:admin}
                                 (do
                                   (data/update-post db-spec (Integer/parseInt id)

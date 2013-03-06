@@ -176,16 +176,14 @@ footer#page_footer {
     font-size: small;
 }
 
-/* Admin section */
-section#main {
-	float: left;
+form section#categories {
+  border: 1px solid #ccc;
+  margin: 15px 0;
+  padding: 3px;
+  width: 60%;
 }
 
-section#side {
-	float: right;
-}
-
-section#side section#categories ul {
+form section#categories ul {
 	display: block;
   list-style: none;
 }

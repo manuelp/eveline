@@ -128,18 +128,10 @@ All information about identity and roles is in the request, and friend can extra
                                (if (> year 2013)
                                  (h/append (str year)))))
 
-(h/defsnippet publish-form "publish-form.html" [:form] [])
-
-(h/defsnippet compiled-publish-form "publish-form.html" [:form] [post]
-  [:form] (h/set-attr :action (str "/post/edit/" (:id post)))
-  [[:input (h/attr= :name "title")]] (h/set-attr :value (:title post))
-  [[:input (h/attr= :name "format")]] (h/set-attr :value (:type post))
-  [[:textarea (h/attr= :name "content")]] (h/content (:content post)))
-
 (defn post-with-category? [post category db-spec]
   (some (partial = category) (data/post-tags db-spec (:id post))))
 
-(h/defsnippet tag-checkbox "admin.html" [:section#side :section#categories :ul :li :input] [category & post]
+(h/defsnippet tag-checkbox "publish-form.html" [:form :section#categories :ul :li :input] [category & post]
               [:input] (h/do->
                         (h/set-attr :name category)
                         (h/content category)
@@ -148,6 +140,18 @@ All information about identity and roles is in the request, and friend can extra
                           (h/set-attr :checked "checked")
                           (h/content category))))
 
+(h/defsnippet publish-form "publish-form.html" [:form] []
+	[:section#categories :ul :li] (h/clone-for [category (data/categories db-spec)]
+                          	  		(h/content (tag-checkbox category))))
+
+(h/defsnippet compiled-publish-form "publish-form.html" [:form] [post]
+  [:form] (h/set-attr :action (str "/post/edit/" (:id post)))
+  [[:input (h/attr= :name "title")]] (h/set-attr :value (:title post))
+  [[:input (h/attr= :name "format")]] (h/set-attr :value (:type post))
+  [[:textarea (h/attr= :name "content")]] (h/content (:content post))
+  [:section#categories :ul :li] (h/clone-for [category (data/categories db-spec)]
+                          	  		(h/content (tag-checkbox category post))))
+
 (h/deftemplate publish "admin.html" [title tag-line & post]
     [:head :title] (h/content title)
     [:#title] (h/content title)
@@ -155,12 +159,7 @@ All information about identity and roles is in the request, and friend can extra
     [:#main] (h/content (if (empty? post)
                           (publish-form)
                           (compiled-publish-form (first post))))
-    [:section#side :section#categories :ul :li]
-               (h/clone-for [category (data/categories db-spec)]
-                          	  (h/content (if (empty? post)
-                                           (tag-checkbox category)
-                                           (tag-checkbox category (first post)))))
-    [:footer :#current-year] (let [year (time/year (time/now))] 
+		[:footer :#current-year] (let [year (time/year (time/now))] 
                                (if (> year 2013)
                                  (h/append (str year)))))
 

@@ -3,5 +3,18 @@
   Format: <input type="text" name="format" value=""/><br/>
   Content:<br/>
   <textarea name="content" rows="30" cols="80"></textarea><br/>
+  
+  <section id="categories">
+    Existing categories:
+    <ul>
+      <li><input type="checkbox" name="" value=""></li>
+    </ul>      
+    New categories:
+    <input type="text" name="new-categories"
+    		   placeholder="Comma separated tags"
+    			 pattern="(\w|-)+(,(\w|-)+)*"
+    		   value="">
+  </section>
+    
   <input type="submit" name="submit" value="submit"/><br/>
 </form>
