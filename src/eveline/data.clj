@@ -80,7 +80,7 @@
                    [(str "SELECT cast(extract(year from published) as int) AS year,"
                          " cast(extract(month from published) as int) as month FROM posts"
                          " WHERE published IS NOT NULL "
-                         " group by year,month order by year,month")]))
+                         " group by year,month order by year,month desc")]))
 
 (defn month-posts [db-spec year month]
   (m/fetch-results db-spec
