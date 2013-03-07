@@ -39,7 +39,7 @@
              (views/layout request
                            (data/conf-param db-spec "blog-title")
                            (data/conf-param db-spec "tag-line")
-                           (data/posts db-spec)
+                           (take 10 (data/posts db-spec))
                            (data/post-months db-spec)
                            {:caption "Main"
                               :url "/feed"}))
@@ -60,7 +60,7 @@
                               :url "/feed"})))
   (ccore/GET "/category/:category" [category :as request]
              (let [title (str (data/conf-param db-spec "blog-title")
-                              "- Category: " category)]
+                              " - Category: " category)]
                (views/layout request title 
                              (data/conf-param db-spec "tag-line")
                              (data/posts-by-category db-spec category)
