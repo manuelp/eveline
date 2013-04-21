@@ -25,7 +25,7 @@
              	      ["select l.post from post_tags l left join tags t on l.tag=t.id where t.label=?" category])))
 
 (defn posts-by-category [db-spec category]
-  (map #(post db-spec %) (posts-id-by-category db-spec category)))
+  (reverse (sort-by :published (map #(post db-spec %) (posts-id-by-category db-spec category)))))
 
 (defn create-category [db-spec category]
   (jdbc/with-connection db-spec
