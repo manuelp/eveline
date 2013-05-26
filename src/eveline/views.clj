@@ -51,7 +51,7 @@ All information about identity and roles is in the request, and friend can extra
 
 (h/defsnippet comments "comments.html" [:div] [])
 
-(h/defsnippet post "post.html" [:article] [request post single]
+(h/defsnippet post "post.html" [:article] [request post single?]
   [:h1.title] (h/content (:title post))
   [:header :p.post-info :.post-link] (h/set-attr :href (str "/posts/" (:id post)))
   [:header :p.post-info :.edit-link] (if (authorized? request #{:admin})
@@ -62,7 +62,7 @@ All information about identity and roles is in the request, and friend can extra
   [:header :.tags :li] (h/clone-for [tag (data/post-tags db-spec (:id post))]
                                     (h/content (category-link tag)))
   [:section.content] (h/content (h/html-snippet (format-content post)))
-  [:section.comments] (if (= single true)
+  [:section.comments] (if (= single? true)
                         (h/content (comments))))
 
 (h/defsnippet category-link "categories.html" [:a] [category]
