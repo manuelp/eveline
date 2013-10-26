@@ -9,7 +9,7 @@
   (:import org.joda.time.DateTime))
 
 ;; TODO
-;; Views should not depend/use the *data* ns. 
+;; Views should not depend/use the *data* ns.
 ;; Its responsibility should only be to *render views with data passed explicitly*.
 
 (defn format-date [date formatter]
@@ -49,7 +49,9 @@ All information about identity and roles is in the request, and friend can extra
 (def db-spec (or (System/getenv "DATABASE_URL")
                  "postgres://eveline:eveline@localhost/eveline"))
 
-(h/defsnippet post "post.html" [:article] [request post]
+(h/defsnippet comments "comments.html" [:div] [])
+
+(h/defsnippet post "post.html" [:article] [request post single?]
   [:h1.title] (h/content (:title post))
   [:header :p.post-info :.post-link] (h/set-attr :href (str "/posts/" (:id post)))
   [:header :p.post-info :.edit-link] (if (authorized? request #{:admin})
@@ -59,7 +61,9 @@ All information about identity and roles is in the request, and friend can extra
                        (h/content (updated post)))
   [:header :.tags :li] (h/clone-for [tag (data/post-tags db-spec (:id post))]
                                     (h/content (category-link tag)))
-  [:section] (h/content (h/html-snippet (format-content post))))
+  [:section.content] (h/content (h/html-snippet (format-content post)))
+  [:section.comments] (if (= single? true)
+                        (h/content (comments))))
 
 (h/defsnippet category-link "categories.html" [:a] [category]
               [:a] (h/do->
@@ -108,12 +112,14 @@ All information about identity and roles is in the request, and friend can extra
   [:#title] (h/content title)
   [:#tagline] (h/content tag-line)
   [:#page_header :nav :ul] (h/content (nav-bar request nav-links))
-  [:section#posts] (h/content (for [p posts]
-                                (post request p)))
+  [:section#posts] (h/content (if (= (count posts) 1)
+                                (post request (first posts) true)
+                                (for [p posts]
+                                  (post request p false))))
   [:section#sidebar] (h/content (rss-feed (:url feed-data) (:caption feed-data))
                       					(archive-items post-months)
                                 (categories (data/categories db-spec)))
-  [:footer :#current-year] (let [year (time/year (time/now))] 
+  [:footer :#current-year] (let [year (time/year (time/now))]
                              (if (> year 2013)
                                (h/append (str year)))))
 
@@ -124,7 +130,7 @@ All information about identity and roles is in the request, and friend can extra
     [:#title] (h/content title)
     [:#tagline] (h/content tag-line)
     [:#main] (h/content (login-form))
-    [:footer :#current-year] (let [year (time/year (time/now))] 
+    [:footer :#current-year] (let [year (time/year (time/now))]
                                (if (> year 2013)
                                  (h/append (str year)))))
 
@@ -160,7 +166,7 @@ All information about identity and roles is in the request, and friend can extra
     [:#main] (h/content (if (empty? post)
                           (publish-form)
                           (compiled-publish-form (first post))))
-		[:footer :#current-year] (let [year (time/year (time/now))] 
+		[:footer :#current-year] (let [year (time/year (time/now))]
                                (if (> year 2013)
                                  (h/append (str year)))))
 
@@ -174,6 +180,6 @@ All information about identity and roles is in the request, and friend can extra
     [:#tagline] (h/content tag-line)
     [:#page_header :nav :ul] (h/content (nav-bar request nav-links))
     [:#posts] (h/html-content (about-page))
-    [:footer :#current-year] (let [year (time/year (time/now))] 
+    [:footer :#current-year] (let [year (time/year (time/now))]
                                (if (> year 2013)
                                  (h/append (str year)))))
